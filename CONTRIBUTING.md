@@ -5,17 +5,17 @@ Contributions are always welcome and appreciated.
 
 ### How to Contribute
 
-Please check the [issue tracker](https://github.com/habedi/template-typescript-project/issues) to see if there is an
+Please check the [issue tracker](https://github.com/habedi/template-flutter-project/issues) to see if there is an
 issue you would like to work on or if it has already been resolved.
 
 #### Reporting Bugs
 
-1. Open an issue on the [issue tracker](https://github.com/habedi/template-typescript-project/issues).
+1. Open an issue on the [issue tracker](https://github.com/habedi/template-flutter-project/issues).
 2. Include information such as steps to reproduce the observed behavior and relevant logs or screenshots.
 
 #### Suggesting Features
 
-1. Open an issue on the [issue tracker](https://github.com/habedi/template-typescript-project/issues).
+1. Open an issue on the [issue tracker](https://github.com/habedi/template-flutter-project/issues).
 2. Provide details about the feature, its purpose, and potential implementation ideas.
 
 ### Submitting Pull Requests
@@ -30,26 +30,22 @@ issue you would like to work on or if it has already been resolved.
 
 #### Prerequisites
 
-- `Node.js >=20.0.0`
-- `npm` or `yarn` for package management
+- `Flutter SDK`: Installed system-wide, for example via `snap`.
 - `GNU Make`
-- `Python >=3.10` and `pip` for installing `pre-commit`
+- `Python >=3.10` and `pip` for installing `pre-commit`.
 
 #### Development Setup
 
-1. **Install dependencies:**
-
+1.  **Install dependencies:**
     ```shell
     make install
     ```
 
-    This will install the necessary Node.js dependencies.
-
-2. **Set up Git hooks:**
+2.  **Set up Git hooks:**
+    This will set up pre-commit and pre-push hooks for formatting, linting, and testing.
     ```shell
     make setup-hooks
     ```
-    This will set up pre-commit hooks for linting and formatting.
 
 #### Code Style
 

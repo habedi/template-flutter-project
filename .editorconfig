@@ -3,36 +3,25 @@
 # Top-most EditorConfig file
 root = true
 
-# Global settings (applicable to all files unless overridden)
+# Global settings. The default indent_size is set to 2 to match Dart's style guide.
 [*]
-charset = utf-8 # Default character encoding
-end_of_line = lf # Use LF for line endings (Unix-style)
-indent_style = space # Use spaces for indentation
-indent_size = 4 # Default indentation size
-insert_final_newline = true # Make sure files end with a newline
-trim_trailing_whitespace = true # Remove trailing whitespace
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
 
-# JavaScript and TypeScript files
-[*.{js,ts,jsx,tsx}]
+# Dart files: Use 2 spaces for indentation and a maximum line length of 100 characters.
+[*.dart]
+max_line_length = 100
+
+# Python files: Override indent to 4 spaces to follow PEP 8 standard.
+[*.py]
+indent_size = 4
 max_line_length = 100
 
 # Markdown files
 [*.md]
 max_line_length = 120
 trim_trailing_whitespace = false
-
-# Bash scripts
-[*.sh]
-indent_size = 2
-
-# JSON files
-[*.json]
-indent_size = 2
-
-# YAML files
-[*.{yml,yaml}]
-indent_size = 2
-
-# Python files
-[*.py]
-max_line_length = 100

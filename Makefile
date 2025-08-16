@@ -1,36 +1,31 @@
-# Load environment variables from .env file
-ifneq (,$(wildcard ./.env))
-    include .env
-    export $(shell sed 's/=.*//' .env)
-else
-    $(warning .env file not found. Environment variables not loaded.)
-endif
+# Makefile for Flutter project
 
 # ==============================================================================
 # VARIABLES
 # ==============================================================================
-PACKAGE_MANAGER   ?= npm
-NODE_MODULES_DIR  ?= node_modules
-REMOVABLE_THINGS  ?= .vitest-cache coverage
+# Use the Flutter SDK found in the system PATH
+SHELL := /bin/bash
+FLUTTER_BIN       := flutter
+DART_BIN          := dart
+PUB_BIN           := pub
+
+# Add Snap to the PATH if it's not already included
+ifneq (,$(shell command -v snap))
+  ifeq (,$(findstring /snap/bin, $(PATH)))
+   export PATH := /snap/bin:$(PATH)
+  endif
+endif
 
 # ==============================================================================
-# SETUP & CHECKS
+# CHECKS
 # ==============================================================================
-# Check for required tools
-REQUIRED_BINS := node $(PACKAGE_MANAGER) docker
-$(foreach bin,$(REQUIRED_BINS),\
-	$(if $(shell command -v $(bin) 2> /dev/null),,$(error Please install $(bin) to continue)))
+# Check for required tools at the start.
+ifeq (,$(shell command -v flutter))
+    $(error "Flutter SDK not found in your PATH. Please install it (e.g., 'sudo snap install flutter --classic')")
+endif
 
-# Internal target to check for node_modules. Not intended for direct use.
-check-deps:
-	@if [ ! -d "$(NODE_MODULES_DIR)" ]; then \
-		echo "Dependencies not found. Running 'make install' first..."; \
-		$(MAKE) install; \
-	fi
-
-# Declare all targets as phony (not files)
-.PHONY: help install check-deps test coverage lint lint-fix format typecheck build start dev clean reset \
-setup-hooks test-hooks
+.PHONY: help install test lint lint-fix format run clean setup-hooks test-hooks \
+build build-apk build-appbundle build-web build-linux
 
 .DEFAULT_GOAL := help
 
@@ -45,48 +40,55 @@ help: ## Show this help message
 	awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 
 install: ## Install project dependencies
-	$(PACKAGE_MANAGER) install
+	@$(FLUTTER_BIN) pub get
 
-build: check-deps ## Build the project for production
-	$(PACKAGE_MANAGER) run build
+run: ## Run the application in debug mode
+	@$(FLUTTER_BIN) run
 
-start: ## Start the production server
-	$(PACKAGE_MANAGER) start
-
-dev: ## Start the development server
-	$(PACKAGE_MANAGER) run dev
-
-clean: ## Remove caches, build artifacts and documentation
-	rm -rf dist $(NODE_MODULES_DIR) $(REMOVABLE_THINGS) site
+clean: ## Remove caches and build artifacts
+	@$(FLUTTER_BIN) clean
 
 # ==============================================================================
-# DEVELOPMENT
+# DEVELOPMENT & QA
 # ==============================================================================
-test: check-deps ## Run the test suite
-	$(PACKAGE_MANAGER) test
+test: ## Run the test suite
+	@$(FLUTTER_BIN) test
 
-coverage: check-deps ## Run the test suite and generate a coverage report
-	$(PACKAGE_MANAGER) run coverage
+coverage: ## Run tests and generate a coverage report
+	@$(FLUTTER_BIN) test --coverage
 
-lint: check-deps ## Run linter checks
-	$(PACKAGE_MANAGER) run lint
+lint: ## Run linter checks
+	@$(FLUTTER_BIN) analyze
 
-lint-fix: check-deps ## Automatically fix linter errors
-	$(PACKAGE_MANAGER) run lint:fix
+lint-fix: ## Run linter checks and apply automatic fixes
+	@$(DART_BIN) fix --apply
 
-typecheck: check-deps ## Run TypeScript type checks
-	$(PACKAGE_MANAGER) run typecheck
+format: ## Format code with Dart formatter
+	@$(DART_BIN) format .
 
-format: check-deps ## Format code with Prettier
-	$(PACKAGE_MANAGER) run format
+# ==============================================================================
+# BUILD COMMANDS
+# ==============================================================================
+build: build-linux ## Build the project (defaults to Linux)
+
+build-apk: ## Build the Android APK (debug)
+	@$(FLUTTER_BIN) build apk
+
+build-appbundle: ## Build the Android App Bundle (release)
+	@$(FLUTTER_BIN) build appbundle
+
+build-web: ## Build the Web application
+	@$(FLUTTER_BIN) build web
+
+build-linux: ## Build the Linux desktop application
+	@$(FLUTTER_BIN) build linux
 
 # ==============================================================================
 # GIT HOOKS
 # ==============================================================================
-setup-hooks: ## Install Git hooks (pre-commit and pre-push)
-	@echo "Setting up Git hooks..."
+setup-hooks: ## Install Git hooks using pre-commit
 	@if ! command -v pre-commit &> /dev/null; then \
-	   echo "pre-commit not found. Please install it using 'pip install pre-commit'"; \
+	   echo "pre-commit not found. Please install it (e.g., 'pip install pre-commit') and make sure it's in your PATH."; \
 	   exit 1; \
 	fi
 	@pre-commit install --hook-type pre-commit
@@ -94,5 +96,4 @@ setup-hooks: ## Install Git hooks (pre-commit and pre-push)
 	@pre-commit install-hooks
 
 test-hooks: ## Test Git hooks on all files
-	@echo "Testing Git hooks..."
 	@pre-commit run --all-files --show-diff-on-failure

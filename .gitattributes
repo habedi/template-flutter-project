@@ -66,3 +66,5 @@
 # Exclude files from language stats (GitHub Linguist)
 *.ipynb linguist-vendored
 *.html linguist-vendored
+*.css linguist-vendored
+Makefile linguist-vendored

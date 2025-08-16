@@ -1,7 +1,7 @@
 [project]
-name = "template-typescript-project"
+name = "template-flutter-project"
 version = "0.1.0"
-description = "Python environment for JavaScript template project"
+description = "Python environment for Flutter template project"
 readme = "README.md"
 license = { text = "MIT" }
 authors = [

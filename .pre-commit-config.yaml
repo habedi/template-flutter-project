@@ -36,12 +36,6 @@ repos:
         pass_filenames: false
         stages: [pre-commit]
 
-      - id: typecheck
-        name: Typecheck the code
-        entry: make typecheck
-        language: system
-        pass_filenames: false
-
       - id: test
         name: Run the tests
         entry: make test
